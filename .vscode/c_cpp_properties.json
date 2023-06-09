@@ -1,0 +1,31 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/renjie/catkin_ws/devel/include/**",
+        "/home/renjie/ws_livox/devel/include/**",
+        "/home/renjie/ws_moveit/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/renjie/ws_moveit2/install/moveit_visual_tools/include/**",
+        "/home/renjie/ws_moveit2/install/rviz_visual_tools/include/**",
+        "/home/renjie/catkin_ws/src/ME5001/A-LOAM/include/**",
+        "/home/renjie/catkin_ws/src/cam_cali/include/**",
+        "/home/renjie/catkin_ws/src/cam_lidar_calib/include/**",
+        "/home/renjie/catkin_ws/src/ME5001/FAST_LIO/include/**",
+        "/home/renjie/catkin_ws/src/LIO-SAM-DetailedNote/include/**",
+        "/home/renjie/catkin_ws/src/wrp_ros_scout_v2/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
