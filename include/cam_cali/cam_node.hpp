@@ -29,6 +29,8 @@ class CameraNode{
         ros::NodeHandle camera_node;
         cv::VideoCapture cap_;
         std::string img_topic="camera/image";
+        int img_num = 9;
+        std::string filename;
 };
 } // namespace calibration
 

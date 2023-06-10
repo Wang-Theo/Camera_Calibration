@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "cam_cali/cam_pulish.hpp"
+#include "cam_cali/cam_node.hpp"
 
 using namespace calibration;
 

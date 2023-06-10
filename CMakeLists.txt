@@ -21,7 +21,7 @@ catkin_package(
 
 # add library
 add_library(cam_cali
-    src/cam_pulish.cpp)
+    src/cam_node.cpp)
 
 include_directories(
   include
