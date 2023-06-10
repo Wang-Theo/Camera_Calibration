@@ -24,11 +24,12 @@ class CameraNode{
         CameraNode(cv::VideoCapture cap);
 
         void CamPublisher(ros::NodeHandle camera_node);
-        void ImageProcess(cv::Mat frame);
+        void OpencvCalibrateCameraIntrinsics();
 
         ros::NodeHandle camera_node;
         cv::VideoCapture cap_;
         std::string img_topic="camera/image";
+        cv::Mat frame;
         int img_num = 9;
         std::string filename;
 };

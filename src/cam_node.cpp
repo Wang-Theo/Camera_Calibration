@@ -16,8 +16,6 @@ CameraNode::CameraNode(cv::VideoCapture cap){
 void CameraNode::CamPublisher(ros::NodeHandle camera_node){
     image_transport::ImageTransport it(camera_node);
     image_transport::Publisher pub = it.advertise(img_topic.c_str(), 1);
-
-    cv::Mat frame;
  
     ros::Rate loop_rate(30);
     int img_id = 1;
@@ -29,7 +27,7 @@ void CameraNode::CamPublisher(ros::NodeHandle camera_node){
             cv::imwrite(filename.c_str(), frame);
 
             if (image_exist_flag == 1){
-                CameraNode::ImageProcess(frame); // process images from camera
+                CameraNode::OpencvCalibrateCameraIntrinsics(); // process images from camera
             }
 
 	    	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
@@ -46,7 +44,7 @@ void CameraNode::CamPublisher(ros::NodeHandle camera_node){
 
 }
 
-void CameraNode::ImageProcess(cv::Mat frame){
+void CameraNode::OpencvCalibrateCameraIntrinsics(){
     // 1. Define checkerboard parameters
     int boardWidth = 6;  // horizontal corner number
     int boardHeight = 8; // vertical corner number
@@ -90,6 +88,7 @@ void CameraNode::ImageProcess(cv::Mat frame){
         cv::Mat cameraMatrix, distCoeffs;
         std::vector<cv::Mat> rvecs, tvecs;
         cv::calibrateCamera(objectPoints, imagePoints, image.size(), cameraMatrix, distCoeffs, rvecs, tvecs);
+        frame = image;
         cv::imwrite("/home/renjie/catkin_ws/src/Camera_Calibration/image/calibrated_image.png",image);
 
         std::cout << "Camera matrix:" << std::endl << cameraMatrix << std::endl;
