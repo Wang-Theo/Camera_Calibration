@@ -48,8 +48,8 @@ void CameraNode::CamPublisher(ros::NodeHandle camera_node){
 
 void CameraNode::ImageProcess(cv::Mat frame){
     // 1. Define checkerboard parameters
-    int boardWidth = 7;  // horizontal corner number
-    int boardHeight = 7; // vertical corner number
+    int boardWidth = 6;  // horizontal corner number
+    int boardHeight = 8; // vertical corner number
     float squareSize = 1.f; // grid size (unit: meter)(can set roughly)
     cv::Size boardSize(boardWidth, boardHeight);
 
@@ -71,8 +71,6 @@ void CameraNode::ImageProcess(cv::Mat frame){
         {
             cv::cornerSubPix(gray, corners, cv::Size(11, 11), cv::Size(-1, -1), cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1));
             cv::drawChessboardCorners(image, boardSize, corners, found);
-            // cv::imshow("image", image);
-            // cv::waitKey();
 
             std::vector<cv::Point3f> objectCorners;
             for (int j = 0; j < boardHeight; j++)
@@ -92,11 +90,12 @@ void CameraNode::ImageProcess(cv::Mat frame){
         cv::Mat cameraMatrix, distCoeffs;
         std::vector<cv::Mat> rvecs, tvecs;
         cv::calibrateCamera(objectPoints, imagePoints, image.size(), cameraMatrix, distCoeffs, rvecs, tvecs);
+        cv::imwrite("/home/renjie/catkin_ws/src/Camera_Calibration/image/calibrated_image.png",image);
 
         std::cout << "Camera matrix:" << std::endl << cameraMatrix << std::endl;
         std::cout << "Distortion coefficients:" << std::endl << distCoeffs << std::endl;
         std::cout << "----------------------------------" << std::endl;
-        frame = image;
+        
     }
     std::cout << "Checkerboard not found or too ambiguous !" << std::endl;
 }
