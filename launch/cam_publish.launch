@@ -1,9 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <launch>
-  <!-- <param name = "lidar_in_topic" type="string" value="/velodyne_points"/> -->
-
+  
   <arg name="rviz" default="true" />
 
-  <node  pkg="cam_cali" name="cam_pulish_node" type="cam_publish" output="screen" />
+  <node  pkg="cam_cali" name="cam_pulish_node" type="cam_publish" output="screen" >
+  </node>
 
   <group if="$(arg rviz)">
     <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find cam_cali)/config/cam_publish.rviz" />

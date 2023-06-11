@@ -21,7 +21,6 @@ void CameraNode::OpencvCalibrateCameraIntrinsics(std::queue<cv::Mat> images){
     for (size_t i = 0; i < img_num; i++)
     {
         image = images.front();
-        images.pop();
         cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
 
         found = cv::findChessboardCorners(image, boardSize, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
@@ -41,19 +40,20 @@ void CameraNode::OpencvCalibrateCameraIntrinsics(std::queue<cv::Mat> images){
             objectPoints.push_back(objectCorners);
             imagePoints.push_back(corners);
         }
+        images.pop();
     }
 
     // 3. Calibrate camera
-    if(!image.empty()){
-        cv::Mat cameraMatrix, distCoeffs;
-        std::vector<cv::Mat> rvecs, tvecs;
+    cv::Mat cameraMatrix, distCoeffs;
+    std::vector<cv::Mat> rvecs, tvecs;
+    if(objectPoints.size()!=0){
         cv::calibrateCamera(objectPoints, imagePoints, image.size(), cameraMatrix, distCoeffs, rvecs, tvecs, cv::CALIB_FIX_K3);
+
         cv::imwrite("/home/renjie/catkin_ws/src/Camera_Calibration/image/calibrated_image.png",image);
 
         std::cout << "Camera matrix:" << std::endl << cameraMatrix << std::endl;
         std::cout << "Distortion coefficients:" << std::endl << distCoeffs << std::endl;
         std::cout << "----------------------------------" << std::endl;
-        
     }else{
         std::cout << "Checkerboard not found or too ambiguous !" << std::endl;
     }
