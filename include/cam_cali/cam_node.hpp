@@ -17,21 +17,28 @@
 #include "ceres/covariance.h"
 
 #include <iostream>
+#include <vector>
+#include <string>
+#include <queue>
+#include <thread>
 
 namespace calibration {
 class CameraNode{
     public:
-        CameraNode(cv::VideoCapture cap);
-
-        void CamPublisher(ros::NodeHandle camera_node);
-        void OpencvCalibrateCameraIntrinsics();
-
-        ros::NodeHandle camera_node;
-        cv::VideoCapture cap_;
+        int device_id=2;
         std::string img_topic="camera/image";
         cv::Mat frame;
-        int img_num = 9;
-        std::string filename;
+
+        int img_num = 20;
+        std::queue<cv::Mat> img_saved;
+        int image_exist_flag = 0;
+
+    public:
+        void OpencvCalibrateCameraIntrinsics(std::queue<cv::Mat> images);
+        void ImageCallback(const sensor_msgs::ImageConstPtr& msg);
+
+        void CamPublisher(ros::NodeHandle nh);
+        void CamSubscriber(ros::NodeHandle nh);
 };
 } // namespace calibration
 

@@ -1,50 +1,10 @@
 // Jun 9 created by Wang Renjie //
 
-#include <string>
-#include <vector>
-
 #include "cam_cali/cam_node.hpp"
 
 namespace calibration {
 
-CameraNode::CameraNode(cv::VideoCapture cap){
-    ros::NodeHandle camera_node;
-    cap_ = cap;
-    CameraNode::CamPublisher(camera_node);
-}
-
-void CameraNode::CamPublisher(ros::NodeHandle camera_node){
-    image_transport::ImageTransport it(camera_node);
-    image_transport::Publisher pub = it.advertise(img_topic.c_str(), 1);
- 
-    ros::Rate loop_rate(30);
-    int img_id = 1;
-    int image_exist_flag = 0;
-    while (camera_node.ok()) {
-	    cap_.read(frame);
-	    if(!frame.empty()){
-            filename = "/home/renjie/catkin_ws/src/Camera_Calibration/image/img" + std::to_string(img_id) + ".png"; // modify filepath of images to be saved
-            cv::imwrite(filename.c_str(), frame);
-
-            if (image_exist_flag == 1){
-                CameraNode::OpencvCalibrateCameraIntrinsics(); // process images from camera
-            }
-
-	    	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
-	    	pub.publish(msg);
-	    }
-        if(img_id == img_num){
-            img_id = 1;
-            image_exist_flag = 1;
-        }
-        img_id++;
-        ros::spinOnce();
-        loop_rate.sleep();
-    }
-
-}
-
-void CameraNode::OpencvCalibrateCameraIntrinsics(){
+void CameraNode::OpencvCalibrateCameraIntrinsics(std::queue<cv::Mat> images){
     // 1. Define checkerboard parameters
     int boardWidth = 6;  // horizontal corner number
     int boardHeight = 8; // vertical corner number
@@ -55,13 +15,13 @@ void CameraNode::OpencvCalibrateCameraIntrinsics(){
     std::vector<std::vector<cv::Point2f>> imagePoints;
     std::vector<cv::Point2f> corners;
 
-
     // 2. Extracte corner points
     cv::Mat image, gray;
     bool found;
     for (size_t i = 0; i < img_num; i++)
     {
-        image = cv::imread((filename.substr(0,filename.length()-5)+std::to_string(i+1)+filename.substr(filename.length()-4,filename.length())).c_str(), cv::IMREAD_COLOR);
+        image = images.front();
+        images.pop();
         cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
 
         found = cv::findChessboardCorners(image, boardSize, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
@@ -84,19 +44,64 @@ void CameraNode::OpencvCalibrateCameraIntrinsics(){
     }
 
     // 3. Calibrate camera
-    if(found){
+    if(!image.empty()){
         cv::Mat cameraMatrix, distCoeffs;
         std::vector<cv::Mat> rvecs, tvecs;
-        cv::calibrateCamera(objectPoints, imagePoints, image.size(), cameraMatrix, distCoeffs, rvecs, tvecs);
-        frame = image;
+        cv::calibrateCamera(objectPoints, imagePoints, image.size(), cameraMatrix, distCoeffs, rvecs, tvecs, cv::CALIB_FIX_K3);
         cv::imwrite("/home/renjie/catkin_ws/src/Camera_Calibration/image/calibrated_image.png",image);
 
         std::cout << "Camera matrix:" << std::endl << cameraMatrix << std::endl;
         std::cout << "Distortion coefficients:" << std::endl << distCoeffs << std::endl;
         std::cout << "----------------------------------" << std::endl;
         
+    }else{
+        std::cout << "Checkerboard not found or too ambiguous !" << std::endl;
     }
-    std::cout << "Checkerboard not found or too ambiguous !" << std::endl;
+}
+
+void CameraNode::ImageCallback(const sensor_msgs::ImageConstPtr& msg){
+    std::cout<<"Start calibration ! (image number: "<< img_num << ")" <<std::endl;
+    cv::Mat images_subcribe = cv_bridge::toCvShare(msg, "bgr8")->image;
+    int img_id = 1;
+    while(!images_subcribe.empty()){
+        img_saved.push(images_subcribe);
+        if (img_id>img_num) {
+            img_saved.pop();
+            CameraNode::OpencvCalibrateCameraIntrinsics(img_saved);
+        }
+
+        if(img_id == img_num){
+            image_exist_flag = 1;
+        }
+        img_id++;
+    }
+}
+
+void CameraNode::CamPublisher(ros::NodeHandle nh){
+    cv::VideoCapture cap;
+    int api_id=cv::CAP_ANY;
+    cap.open(device_id+api_id);
+
+    image_transport::ImageTransport it(nh);
+    image_transport::Publisher pub = it.advertise(img_topic.c_str(), 1);
+ 
+    ros::Rate loop_rate(30);
+    while (nh.ok()) {
+	    cap.read(frame);
+	    if(!frame.empty()){
+	    	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
+	    	pub.publish(msg);
+	    }
+        ros::spinOnce();
+        loop_rate.sleep();
+    }
+
+}
+
+void CameraNode::CamSubscriber(ros::NodeHandle nh){
+    image_transport::ImageTransport it(nh); 
+    image_transport::Subscriber sub = it.subscribe(img_topic.c_str(), 1, &CameraNode::ImageCallback, this);  
+    ros::spin();  
 }
 
 } // namespace calibration

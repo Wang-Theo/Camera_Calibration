@@ -4,9 +4,9 @@
 using namespace calibration;
 
 int main(int argc, char **argv){
-    ros::init(argc, argv, "img_publisher");
-    ros::NodeHandle camera_node;
+    ros::init(argc, argv, "cam_sub_node");
+    ros::NodeHandle camera_node;  
     CameraNode cam;
-    cam.CamPublisher(camera_node);
+    cam.CamSubscriber(camera_node);
     return 0;
 }

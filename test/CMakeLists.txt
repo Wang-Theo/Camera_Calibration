@@ -6,3 +6,12 @@ target_link_libraries(cam_publish
    ${OpenCV_LIBS}
    ${CERES_LIBRARIES}
 )
+
+add_executable(cam_calibrate test_cam_calibrate.cpp)
+
+target_link_libraries(cam_calibrate
+   cam_cali
+   ${catkin_LIBRARIES}
+   ${OpenCV_LIBS}
+   ${CERES_LIBRARIES}
+)
