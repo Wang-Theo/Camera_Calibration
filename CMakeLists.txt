@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
+# set(OpenCV_DIR "~/opencv-3.4.3/build")   
+# find_package( OpenCV 3.4.3 REQUIRED)
 find_package( OpenCV REQUIRED)
 
 catkin_package(
@@ -21,7 +23,8 @@ catkin_package(
 
 # add library
 add_library(cam_cali
-    src/cam_node.cpp)
+    src/cam_node.cpp
+    src/line_extract.cpp)
 
 include_directories(
   include
