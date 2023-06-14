@@ -38,10 +38,10 @@ void LineExtract::ImageCallback(const sensor_msgs::ImageConstPtr& msg_cam1, cons
 }
 
 cv::Mat LineExtract::FastLineDetector(cv::Mat image1, cv::Mat image2){
-    int    length_threshold    = 10;  
-    float  distance_threshold  = 1.41421356f;  
-    double canny_th1           = 50.0;  
-    double canny_th2           = 50.0;  
+    int    length_threshold    = 50;  
+    float  distance_threshold  = 2.0f;  
+    double canny_th1           = 30.0;  
+    double canny_th2           = 30.0;  
     int    canny_aperture_size = 3;  
     bool   do_merge            = false;  
     cv::Ptr<cv::ximgproc::FastLineDetector> fld = cv::ximgproc::createFastLineDetector(  
