@@ -1,6 +1,6 @@
 # Camera_Calibration
 
-Tool to calibrate camera and publish images processed to RViz  
+Tool to calibrate multi-cameras and camera-lidar
 
 **Status: publish camera images / calibrate camera intrinsics / extract line feature**
 
@@ -36,7 +36,7 @@ You can find the calibrated image `calibrated_image.png` in folder `image`
 <img src="https://github.com/Wang-Theo/Camera_Calibration/blob/master/image/calibrated_image.png" width="500" alt="image_calibrated"/>
 
 The calbrated result matrix is shown in terminal  
-<img src="https://github.com/Wang-Theo/Camera_Calibration/blob/master/image/cam_cali_result.png" width="200" alt="calibrate_result"/>
+<img src="https://github.com/Wang-Theo/Camera_Calibration/blob/master/image/cam_cali_result.png" width="500" alt="calibrate_result"/>
 
 2.4 Extract line feature
 ```
