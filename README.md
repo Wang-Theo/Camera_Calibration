@@ -4,7 +4,7 @@
 ![ROS Noetic](https://img.shields.io/badge/Tools-ROS_Noetic-informational?style=flat&logo=ROS&logoColor=white&color=2bbc8a)
 ![C++](https://img.shields.io/badge/Code-C++-informational?style=flat&logo=c%2B%2B&logoColor=white&color=2bbc8a)
 
-Tool to calibrate multi-cameras and camera-lidar
+Tool to calibrate camera and extract line feature using OpenCV
 
 **Status: publish camera images / calibrate camera intrinsics / extract line feature**
 
